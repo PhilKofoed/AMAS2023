@@ -41,7 +41,7 @@ ytick.color : (0.1,0.1,0.1)
 ytick.direction : in
 
 # FIGURE OUTPUT 
-figure.figsize  : 8, 5
+figure.figsize  : 9, 6
 figure.dpi : 80
-figure.facecolor : (0.9, 0.9, 0.9)
+figure.facecolor : (0.92, 0.92, 0.92)
 savefig.dpi : 200
