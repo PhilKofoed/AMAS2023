@@ -1,47 +1,66 @@
 # To check more avaialble options see:
 # https://matplotlib.org/tutorials/introductory/customizing.html
 
-text.color : (0.1,0.1,0.1)
+text.color :    (0.1,0.1,0.1)
 
+####################
 # AXES
-axes.titlesize : 16
-axes.labelsize : 14
-axes.edgecolor : (0.1,0.1,0.1) #Normalized RGB colours (from 0 to 1 instead of 0 to 255)
-axes.labelcolor : (0.1,0.1,0.1)
-axes.linewidth : 1
-axes.spines.top : True
-axes.spines.right : True
-axes.spines.bottom : True
-axes.spines.left : True
+####################
+axes.titlesize :        16
+axes.labelsize :        14
+axes.edgecolor :        (0.1,0.1,0.1) #Normalized RGB colours (from 0 to 1 instead of 0 to 255)
+axes.labelcolor :       (0.1,0.1,0.1)
+axes.linewidth :        1
+axes.spines.top :       True
+axes.spines.right :     True
+axes.spines.bottom :    True
+axes.spines.left :      True
 
+####################
 # GRID
+####################
 axes.grid : True
-grid.alpha : 0.5
-grid.linestyle : --
-grid.linewidth : 0.5
-grid.color: 'black'
+grid.alpha :        0.5
+grid.linestyle :    --
+grid.linewidth :    0.5
+grid.color:         'black'
 
+####################
 # LINES
+####################
 # Casper colours
-# axes.prop_cycle : cycler('color', [ 'b24da7', '554db2', '4db2ab', '54b24d', 'b24d4d']) #hex colours
+# axes.prop_cycle :     cycler('color', [ 'b24da7', '554db2', '4db2ab', '54b24d', 'b24d4d']) #hex colours
 # My colours
-axes.prop_cycle : cycler('color', [ 'd92323', 'd97423', '3dd923', '234fd9', 'a723d9', 'd92382']) #hex colours
-lines.linewidth : 1.5
+axes.prop_cycle :       cycler('color', [ 'd92323', 'd97423', '3dd923', '234fd9', 'a723d9', '23c0d9', 'b5d923', 'd92382',]) #hex colours
+lines.linewidth :       1.5
 lines.markeredgewidth : 0.0
 
+####################
 # SCATTER PLOT
+####################
 scatter.marker : .
 
+####################
 # TICKS
-xtick.labelsize : 13
-xtick.color : (0.1,0.1,0.1)
-xtick.direction : in
-ytick.labelsize : 13
-ytick.color : (0.1,0.1,0.1)
-ytick.direction : in
+####################
+xtick.labelsize :   13
+xtick.color :       (0.1,0.1,0.1)
+xtick.direction :   in
+xtick.major.size :  10
+xtick.minor.size :  6
+xtick.minor.visible: True
 
+ytick.labelsize :    13
+ytick.color :       (0.1,0.1,0.1)
+ytick.direction :   in
+ytick.major.size :  10
+ytick.minor.size :  6
+ytick.minor.visible: True
+
+####################
 # FIGURE OUTPUT 
-figure.figsize  : 9, 6
-figure.dpi : 80
-figure.facecolor : (0.92, 0.92, 0.92)
-savefig.dpi : 200
+####################
+figure.figsize  :   9, 6
+figure.dpi :        80
+figure.facecolor :  (0.92, 0.92, 0.92)
+savefig.dpi :       200
