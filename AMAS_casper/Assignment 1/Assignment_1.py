@@ -86,16 +86,20 @@ def plot_hist(df, header, title, figsize=(8,6), bin_width=10, xlabel=None, ylabe
 	sns.move_legend(ax, loc=(0.01,0.65))
 	ax.margins(x=0)
 	ax.xaxis.labelpad = 20
+	ax.grid(axis='x',linewidth=5, linestyle='-', alpha=1)
 	fig.show()
+
+def scrape_html(url, scraper_type='html.parser'):
+	scraper = cloudscraper.create_scraper()
+	response = scraper.get(url)
+	soup = BeautifulSoup(response.content, scraper_type)
+	return soup
 #%%
 url_2014 = 'https://kenpom.com/index.php?y=2014'
 url_2009 = 'https://kenpom.com/index.php?y=2009'
-scraper = cloudscraper.create_scraper()
-response_2014 = scraper.get(url_2014)
-response_2009 = scraper.get(url_2009)
 
-soup_2014 = BeautifulSoup(response_2014.content, 'html.parser')
-soup_2009 = BeautifulSoup(response_2009.content, 'html.parser')
+soup_2014 = scrape_html(url_2014)
+soup_2009 = scrape_html(url_2009)
 
 df_2014 = create_df(get_headers(soup_2014),get_data(soup_2014))
 df_2009 = create_df(get_headers(soup_2009),get_data(soup_2009))
@@ -126,10 +130,10 @@ bool_mask_2009 = [conf in np.array(relevant_conferences) for conf in df_2009["Co
 plt.style.use(r'..\casper_style.mplstyle')
 
 #%%
-plot_hist(df_2014, 'AdjD', 'College basketball AdjD rating\nSelected conferences', mask=bool_mask_2014, bin_width=7,mask_name='Conf', xlabel='Adjusted Defense Rating')
+plot_hist(df=df_2014, header='AdjD', title='College basketball AdjD rating\nSelected conferences 2014', mask=bool_mask_2014, bin_width=7, mask_name='Conf', xlabel='Adjusted Defense Rating')
 
 # %%
-plot_hist(df_2009, 'AdjD', 'College basketball AdjD rating\nSelected conferences', mask=bool_mask_2009, bin_width=7,mask_name='Conf', xlabel='Adjusted Defense Rating')
+plot_hist(df_2009, 'AdjD', 'College basketball AdjD rating\nSelected conferences 2009', mask=bool_mask_2009, bin_width=7,mask_name='Conf', xlabel='Adjusted Defense Rating')
 
 # %%
 dfmerge = df_2014.merge(df_2009, left_on='Team', right_on='Team',suffixes=('_2014','_2009')).reset_index(drop=True)
@@ -141,16 +145,10 @@ conference_merged_selected_conf = sort_as_dict(df_merged_selected_conf, 'Conf_20
 
 AdjO_diff = np.abs(dfmerge['AdjO_diff'].iloc[bool_mask_merge].to_numpy(dtype=np.float64))
 
-
-
-fig, ax = plt.subplots(figsize=(8,6))
-sns.scatterplot(data=df_merged_selected_conf, x='AdjO_2009', y='AdjO_diff', hue='Conf_2014', hue_order=relevant_conferences, ax=ax, s=200)
-ax.set_title('Change in AdjO from 2009-2014 for selected conferences')
-ax.set_xlabel('Adjusted Offence Score 2009')
-ax.set_ylabel('Adjusted Offence Score change')
 #plt.scatter(dfmerge['AdjO_2009'].iloc[bool_mask_merge],dfmerge['AdjO_2009'].iloc[bool_mask_merge]-dfmerge['AdjO_2014'].iloc[bool_mask_merge])
 #%%
-np.mean(df_merged_rest['AdjO_diff'])
+mean_rest = np.mean(df_merged_rest['AdjO_diff'])
+median_rest = np.median(df_merged_rest['AdjO_diff'])
 #%%
 conf_mean = {}
 conf_median = {}
@@ -169,20 +167,146 @@ for k, v in conf_mean.items():
 for k, v in conf_median.items():
     conf_median[k] = np.median(v)
 
-print(conf_mean)
-print(conf_median)
+#%%
+display(df_merged_selected_conf)
+#%%
+fig, ax = plt.subplots(figsize=(8,6))
+sns.scatterplot(data=df_merged_selected_conf, x='AdjO_2009', y='AdjO_diff', hue='Conf_2014', hue_order=relevant_conferences, ax=ax, s=200)
+ax.set_title('Change in AdjO from 2009-2014 for selected conferences')
+ax.set_xlabel('Adjusted Offence Score 2009')
+ax.set_ylabel('Adjusted Offence Score change')
+fig.show()
+#%%
+dict_conf = sort_as_dict(df_2014, 'Conf')
+
+selected_conferences = ['ACC', 'SEC', 'B10', 'BSky', 'A10']
+
+cycle = ['forestgreen', 'mediumblue', 'magenta', 'r', 'darkorange']
+xlabel='$X$'; ylabel='$Y$'
+
+
+Nlayer = 5
+
+fig, axarr = plt.subplots(Nlayer, figsize=(12,20), sharex='col',gridspec_kw={'hspace': 0, 'wspace': 0})
+
+for i,(ax, key) in enumerate(zip(axarr,selected_conferences)):
+	histos = df_2014['AdjD'][dict_conf[key]]
+	ax.hist(histos, bins=5,linewidth=4.0, color=cycle[i], label=f'conference: {selected_conferences[i]}', histtype='step')
+	ax.grid(linestyle='--')
+	ax.set_ylim(ymin=0, ymax=6.5)
+	ax.vlines(x=np.mean(histos), ymin=0, ymax=6.5, colors=cycle[i], linestyles='--', label=f'mean={np.mean(histos):.1f}')
+	ax.legend(loc='upper left', prop={'size':10})
+
+ax.set(xlabel='Adjusted Defense (AdjD)', ylabel='Frequency')
+ax.yaxis.set_label_coords(-0.06,Nlayer/2) 
+axarr[0].set_title('Adjusted Defense (AdjD) for the five conferences');
+#%%
+relevant_conferences = ['ACC', 'SEC', 'B10', 'BSky', 'A10', 'BE']
+bool_mask_2014 = [conf in np.array(relevant_conferences) for conf in df_2014["Conf"]]
+bool_mask_2009 = [conf in np.array(relevant_conferences) for conf in df_2009["Conf"]]
+
+# %%
+plt.style.use(r'..\casper_style.mplstyle')
+
+#%%
+plot_hist(df_2014, 'AdjD', 'College basketball AdjD rating\nSelected conferences 2014', mask=bool_mask_2014, bin_width=7,mask_name='Conf', xlabel='Adjusted Defense Rating')
+
+# %%
+plot_hist(df_2009, 'AdjD', 'College basketball AdjD rating\nSelected conferences 2009', mask=bool_mask_2009, bin_width=7,mask_name='Conf', xlabel='Adjusted Defense Rating')
+
+# %%
+dfmerge = df_2014.merge(df_2009, left_on='Team', right_on='Team',suffixes=('_2014','_2009')).reset_index(drop=True)
+dfmerge['AdjO_diff'] = dfmerge['AdjO_2014']-dfmerge['AdjO_2009']
+bool_mask_merge = np.array([conf in np.array(relevant_conferences) for conf in dfmerge["Conf_2014"]])
+df_merged_selected_conf = dfmerge.iloc[bool_mask_merge,:]
+df_merged_rest = dfmerge.iloc[~bool_mask_merge,:]
+conference_merged_selected_conf = sort_as_dict(df_merged_selected_conf, 'Conf_2014')
+
+AdjO_diff = np.abs(dfmerge['AdjO_diff'].iloc[bool_mask_merge].to_numpy(dtype=np.float64))
+
+#plt.scatter(dfmerge['AdjO_2009'].iloc[bool_mask_merge],dfmerge['AdjO_2009'].iloc[bool_mask_merge]-dfmerge['AdjO_2014'].iloc[bool_mask_merge])
+#%%
+mean_rest = np.mean(df_merged_rest['AdjO_diff'])
+median_rest = np.median(df_merged_rest['AdjO_diff'])
+#%%
+conf_mean = {}
+conf_median = {}
+
+for i,key in enumerate(df_merged_selected_conf['Conf_2014']):
+	if not key in conf_mean:
+		conf_mean[key] = []
+		conf_median[key] = []
+
+	if key in conf_mean:
+		conf_mean[key].append(df_merged_selected_conf['AdjO_diff'].iloc[i])
+		conf_median[key].append(df_merged_selected_conf['AdjO_diff'].iloc[i])
+
+for k, v in conf_mean.items():
+    conf_mean[k] = np.mean(v)
+for k, v in conf_median.items():
+    conf_median[k] = np.median(v)
+
+
+#%%
+fig, ax = plt.subplots(figsize=(8,6))
+sns.scatterplot(data=df_merged_selected_conf, x='AdjO_2009', y='AdjO_diff', hue='Conf_2014', hue_order=relevant_conferences, ax=ax, s=200)
+ax.set_title('Change in AdjO from 2009-2014 for selected conferences')
+ax.set_xlabel('Adjusted Offence Score 2009')
+ax.set_ylabel('Adjusted Offence Score change')
+fig.show()
+
+
 # %%
 with pd.option_context('display.max_rows', None,
                        'display.max_columns', None,
                        'display.precision', 3,
                        ):
     print(dfmerge['AdjO_diff'])
+prop_cycle = plt.rcParams['axes.prop_cycle']
+
+fig, ax = plt.subplots(figsize=(8,6))
+sns.histplot(dfmerge['AdjO_diff'], alpha=0.7, ax=ax)
+for i,mean in enumerate(conf_mean.values()):
+	ax.vlines(mean, ymin=0, ymax=70, color = prop_cycle.by_key()['color'][i], label=f'{relevant_conferences[i]} {mean:.1f}',alpha=0.7)
+	ax.vlines(list(conf_median.values())[i], ymin=0, ymax=70, color = prop_cycle.by_key()['color'][i], label=f'{relevant_conferences[i]} {list(conf_median.values())[i]:.1f}', linestyles='--',alpha=0.7)
+
+ax.vlines(mean_rest, ymin=0, ymax=70, color ='black', label=f'Remaining {mean_rest:.1f}', alpha=0.7)
+ax.vlines(median_rest, ymin=0, ymax=70, color = 'black', label=f'Remaining {median_rest:.1f}',linestyles='--', alpha=0.7)
+
+
+handles, labels = plt.gca().get_legend_handles_labels()
+
+#specify order of items in legend
+order = [0,2,4,6,8,10,1,3,5,7,9,11]
+
+ax.legend([handles[idx] for idx in order],[labels[idx] for idx in order],ncol=2, title='Mean                          Median')
 # %%
-sort_as_dict(dfmerge, 'Conf_2014')
+fig, ax = plt.subplots(figsize=(8,6))
+sns.scatterplot(list(conf_mean.values())+[mean_rest], list(conf_median.values())+[median_rest], hue=relevant_conferences+['Remaining'], s=500, ax=ax, palette=prop_cycle.by_key()['color']+['k']
+)
+ax.set_xlabel('Mean')
+ax.set_ylabel('Median')
+# %%
+list(conf_mean.values())+[1]
+# %%
+prop_cycle = plt.rcParams['axes.prop_cycle'][:5]
 
 # %%
-df_merged_selected_conf = dfmerge.iloc[bool_mask_merge,:]
-df_merged_rest = dfmerge.iloc[~bool_mask_merge,:]
+type(plt.rcParams['axes.prop_cycle'])
 # %%
-~np.array(bool_mask_merge)
+prop_cycle.by_key()['color']+['k']
 # %%
+url_author = 'https://www.nbi.dk/~koskinen/Teaching/AdvancedMethodsInAppliedStatistics2018/data/authors-acknowledgements-v5.pdf'
+from bs4 import BeautifulSoup as bs
+import requests
+import urllib
+import pdfkit
+# %%
+# findAll and find function of BeautifulSoup search for HTML tags
+# findAll will return a list with n elements
+url_author = 'https://www.nbi.dk/~koskinen/Teaching/AdvancedMethodsInAppliedStatistics2018/data/authors-acknowledgements-v5.pdf'
+response = requests.get(url_author)
+soup = bs(response.text,'html.parser')
+a=soup.findAll('a',{‘class':'pdf'})
+for tag in a:
+    print(a)
