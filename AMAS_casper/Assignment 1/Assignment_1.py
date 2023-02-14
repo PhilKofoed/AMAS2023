@@ -46,6 +46,7 @@ def create_df(headers, data): # Combine headers
     dictionary = dict(zip(headers, data))
     df = pd.DataFrame(dictionary)
     df['Team'] = df['Team'].str.replace('\d+', '')
+    df['Team'] = df['Team'].str.strip()
     return df
 
 def plot_hist(df, header, title, figsize=(8,6), bin_width=10, xlabel=None, ylabel=None, mask=False, mask_name=False):
@@ -103,8 +104,8 @@ soup_2009 = scrape_html(url_2009)
 
 df_2014 = create_df(get_headers(soup_2014),get_data(soup_2014))
 df_2009 = create_df(get_headers(soup_2009),get_data(soup_2009))
-#df_2014.to_csv(r'C:\Users\caspe\OneDrive\Desktop\AMAS\Assignment 1\kenpom_2014', index=False)
-#df_2009.to_csv(r'C:\Users\caspe\OneDrive\Desktop\AMAS\Assignment 1\kenpom_2009', index=False)
+#df_2014.to_csv(r'C:\Users\caspe\OneDrive\Desktop\AMAS2023\AMAS_casper\Assignment 1\kenpom_2014', index=False)
+#df_2009.to_csv(r'C:\Users\caspe\OneDrive\Desktop\AMAS2023\AMAS_casper\Assignment 1\kenpom_2009', index=False)
 
 #%%
 df_2014 = pd.read_csv(r'.\kenpom_2014')
@@ -134,7 +135,31 @@ plot_hist(df=df_2014, header='AdjD', title='College basketball AdjD rating\nSele
 
 # %%
 plot_hist(df_2009, 'AdjD', 'College basketball AdjD rating\nSelected conferences 2009', mask=bool_mask_2009, bin_width=7,mask_name='Conf', xlabel='Adjusted Defense Rating')
+#%%
+dict_conf = sort_as_dict(df_2014, 'Conf')
 
+selected_conferences = ['ACC', 'SEC', 'B10', 'BSky', 'A10']
+prop_cycle = plt.rcParams['axes.prop_cycle']
+
+xlabel='$X$'; ylabel='$Y$'
+
+
+Nlayer = 5
+
+fig, axarr = plt.subplots(Nlayer, figsize=(12,20), sharex='col',gridspec_kw={'hspace': 0, 'wspace': 0})
+
+for i,(ax, key) in enumerate(zip(axarr,selected_conferences)):
+	histos = df_2014['AdjD'][dict_conf[key]]
+	ax.hist(histos, bins=5,linewidth=4.0, color = prop_cycle.by_key()['color'][i], label=f'conference: {selected_conferences[i]}', histtype='step')
+	ax.set_ylim(ymin=0, ymax=6.5)
+	ax.vlines(x=np.mean(histos), ymin=0, ymax=6.5, color = prop_cycle.by_key()['color'][i], linestyles='-', label=f'mean={np.mean(histos):.1f}')
+	ax.vlines(x=np.median(histos), ymin=0, ymax=6.5, color = prop_cycle.by_key()['color'][i], linestyles='-.', label=f'mean={np.median(histos):.1f}')
+
+	ax.legend(loc='upper left', prop={'size':10})
+
+ax.set(xlabel='Adjusted Defense (AdjD)', ylabel='Frequency')
+ax.yaxis.set_label_coords(-0.06,Nlayer/2) 
+axarr[0].set_title('Adjusted Defense (AdjD) for the five conferences');
 # %%
 dfmerge = df_2014.merge(df_2009, left_on='Team', right_on='Team',suffixes=('_2014','_2009')).reset_index(drop=True)
 dfmerge['AdjO_diff'] = dfmerge['AdjO_2014']-dfmerge['AdjO_2009']
@@ -176,30 +201,6 @@ ax.set_title('Change in AdjO from 2009-2014 for selected conferences')
 ax.set_xlabel('Adjusted Offence Score 2009')
 ax.set_ylabel('Adjusted Offence Score change')
 fig.show()
-#%%
-dict_conf = sort_as_dict(df_2014, 'Conf')
-
-selected_conferences = ['ACC', 'SEC', 'B10', 'BSky', 'A10']
-
-cycle = ['forestgreen', 'mediumblue', 'magenta', 'r', 'darkorange']
-xlabel='$X$'; ylabel='$Y$'
-
-
-Nlayer = 5
-
-fig, axarr = plt.subplots(Nlayer, figsize=(12,20), sharex='col',gridspec_kw={'hspace': 0, 'wspace': 0})
-
-for i,(ax, key) in enumerate(zip(axarr,selected_conferences)):
-	histos = df_2014['AdjD'][dict_conf[key]]
-	ax.hist(histos, bins=5,linewidth=4.0, color=cycle[i], label=f'conference: {selected_conferences[i]}', histtype='step')
-	ax.grid(linestyle='--')
-	ax.set_ylim(ymin=0, ymax=6.5)
-	ax.vlines(x=np.mean(histos), ymin=0, ymax=6.5, colors=cycle[i], linestyles='--', label=f'mean={np.mean(histos):.1f}')
-	ax.legend(loc='upper left', prop={'size':10})
-
-ax.set(xlabel='Adjusted Defense (AdjD)', ylabel='Frequency')
-ax.yaxis.set_label_coords(-0.06,Nlayer/2) 
-axarr[0].set_title('Adjusted Defense (AdjD) for the five conferences');
 #%%
 relevant_conferences = ['ACC', 'SEC', 'B10', 'BSky', 'A10', 'BE']
 bool_mask_2014 = [conf in np.array(relevant_conferences) for conf in df_2014["Conf"]]

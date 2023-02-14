@@ -44,7 +44,6 @@ savefig.dpi : 200
 
 # FIGURE
 figure.edgecolor:   black     # figure edgecolor
-figure.edge
 figure.frameon:     True      # enable figure frame
 figure.facecolor:   white     # figure facecolor
 
