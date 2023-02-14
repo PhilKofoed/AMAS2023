@@ -33,9 +33,15 @@ scatter.marker : .
 xtick.labelsize : 13
 xtick.color : (0.2,0.2,0.2)
 xtick.direction : in
+xtick.major.size :  10
+xtick.minor.size :  6
+xtick.minor.visible: True
 ytick.labelsize : 13
 ytick.color : (0.2,0.2,0.2)
 ytick.direction : in
+ytick.major.size :  10
+ytick.minor.size :  6
+ytick.minor.visible: True
 
 # FIGURE OUTPUT 
 figure.figsize  : 8, 5
