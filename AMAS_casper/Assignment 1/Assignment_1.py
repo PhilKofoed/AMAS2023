@@ -306,8 +306,4 @@ import pdfkit
 # findAll and find function of BeautifulSoup search for HTML tags
 # findAll will return a list with n elements
 url_author = 'https://www.nbi.dk/~koskinen/Teaching/AdvancedMethodsInAppliedStatistics2018/data/authors-acknowledgements-v5.pdf'
-response = requests.get(url_author)
-soup = bs(response.text,'html.parser')
-a=soup.findAll('a',{‘class':'pdf'})
-for tag in a:
-    print(a)
+pd.read_
