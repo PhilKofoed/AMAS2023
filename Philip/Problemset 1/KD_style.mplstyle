@@ -43,14 +43,14 @@ scatter.marker : .
 ####################
 # TICKS
 ####################
-xtick.labelsize :   13
+xtick.labelsize :   12
 xtick.color :       (0.1,0.1,0.1)
 xtick.direction :   in
 xtick.major.size :  10
 xtick.minor.size :  6
 xtick.minor.visible: True
 
-ytick.labelsize :    13
+ytick.labelsize :    12
 ytick.color :       (0.1,0.1,0.1)
 ytick.direction :   in
 ytick.major.size :  10
@@ -60,7 +60,7 @@ ytick.minor.visible: True
 ####################
 # FIGURE OUTPUT 
 ####################
-figure.figsize  :   9, 6
+figure.figsize  :   7, 5
 figure.dpi :        80
 figure.facecolor :  (0.92, 0.92, 0.92)
 savefig.dpi :       200
