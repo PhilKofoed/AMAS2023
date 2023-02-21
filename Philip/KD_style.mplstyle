@@ -58,6 +58,24 @@ ytick.minor.size :  6
 ytick.minor.visible: True
 
 ####################
+# LEGEND
+####################
+legend.loc:           best
+legend.frameon:       True     
+legend.framealpha:    1      
+legend.facecolor:     inherit  
+legend.edgecolor:     (0.1,0.1,0.1) 
+legend.fancybox:      False
+legend.borderaxespad: 0
+
+legend.handlelength:  2
+legend.handletextpad: 0.5
+legend.markerscale:   1.5   
+legend.fontsize:      12
+#legend.labelcolor:    None
+legend.title_fontsize: 14
+
+####################
 # FIGURE OUTPUT 
 ####################
 figure.figsize  :   7, 5
