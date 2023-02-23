@@ -20,7 +20,7 @@ axes.spines.left :      True
 # GRID
 ####################
 axes.grid : True
-grid.alpha :        0.5
+grid.alpha :        0.35
 grid.linestyle :    --
 grid.linewidth :    0.5
 grid.color:         'black'
@@ -32,7 +32,7 @@ grid.color:         'black'
 # axes.prop_cycle :     cycler('color', [ 'b24da7', '554db2', '4db2ab', '54b24d', 'b24d4d']) #hex colours
 # My colours
 axes.prop_cycle :       cycler('color', [ 'd92323', 'd97423', '3dd923', '234fd9', 'a723d9', '23c0d9', 'b5d923', 'd92382',]) #hex colours
-lines.linewidth :       1.5
+lines.linewidth :       2
 lines.markeredgewidth : 0.0
 
 ####################
